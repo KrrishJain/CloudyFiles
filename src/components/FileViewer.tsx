@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, Download, ExternalLink, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 
 interface FileViewerProps {
   isOpen: boolean;
@@ -40,11 +41,14 @@ export default function FileViewer({ isOpen, onClose, fileUrl, fileName, fileTyp
       case 'image':
         return (
           <div className="flex items-center justify-center h-full p-4">
-            <img
+            <Image
               src={fileUrl}
               alt={fileName}
+              width={800}
+              height={600}
               className="max-w-full max-h-full object-contain rounded-lg"
               onLoad={() => setLoading(false)}
+              unoptimized={true}
             />
           </div>
         );

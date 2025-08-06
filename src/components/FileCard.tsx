@@ -17,6 +17,7 @@ import {
   Share2
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import FileViewer from './FileViewer';
 import FileMenuActions from './FileMenuActions';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
@@ -257,11 +258,14 @@ export default function FileCard({ item, onFolderClick, onRefresh }: FileCardPro
           {/* File/Folder Icon or Image */}
         <div className="mb-1 flex items-center justify-center">
           {item.type === 'image' && item.url ? (
-            <img
+            <Image
               src={item.url}
               alt={item.name}
+              width={56}
+              height={56}
               className="w-12 h-12 sm:w-14 sm:h-14 object-cover object-center rounded-md"
               style={{ objectPosition: 'center' }}
+              unoptimized={true}
             />
           ) : (
             getFileIcon(item.type)

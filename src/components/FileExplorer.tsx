@@ -20,6 +20,7 @@ import {
   X,
   Trash2
 } from 'lucide-react';
+import NextImage from 'next/image';
 import { fileService, type ApiResponse, type UploadResult, formatFileSize, getFileName, getFolderName, getFileExtension, triggerFileSelect } from '@/services';
 
 interface FolderItem {
@@ -291,10 +292,13 @@ export default function FileExplorer() {
     if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(extension)) {
       return (
         <div className="flex justify-center items-center max-h-[60vh]">
-          <img 
+          <NextImage 
             src={fileUrl} 
             alt={fileName}
+            width={800}
+            height={600}
             className="max-w-full max-h-full object-contain rounded-lg"
+            unoptimized={true}
           />
         </div>
       );

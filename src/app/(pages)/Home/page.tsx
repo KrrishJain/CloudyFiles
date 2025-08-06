@@ -4,9 +4,22 @@ import DashboardLayout from '@/components/DashboardLayout';
 import FileCard from '@/components/FileCard';
 import { useState, useEffect } from 'react';
 
+// Define interfaces for better type safety
+interface S3File {
+  Key: string;
+  Size?: number;
+  LastModified?: string;
+  url?: string;
+}
+
+interface ApiResponse {
+  files?: S3File[];
+  folders?: string[];
+}
+
 // Import the file service
 const fileService = {
-  async fetchObjects(prefix = '') {
+  async fetchObjects(prefix = ''): Promise<ApiResponse> {
     const url = prefix 
       ? `/api/objects?prefix=${encodeURIComponent(prefix)}`
       : '/api/objects';
@@ -105,7 +118,7 @@ export default function HomePage() {
       });
       
       // Add files
-      data.files?.forEach((file: any, index: number) => {
+      data.files?.forEach((file: S3File, index: number) => {
         const filename = file.Key?.split('/').pop() || file.Key;
         const fileType = getFileType(filename);
         
@@ -129,7 +142,7 @@ export default function HomePage() {
     }
   };
 
-  const handleFolderClick = (folderPath: string, folderName: string) => {
+  const handleFolderClick = (folderPath: string) => {
     setCurrentPath(folderPath);
     const newBreadcrumbs = folderPath === '' ? [] : folderPath.split('/').filter(Boolean);
     setBreadcrumbs(newBreadcrumbs);
@@ -235,7 +248,7 @@ export default function HomePage() {
             <FileCard 
               key={item.id} 
               item={item} 
-              onFolderClick={item.type === 'folder' ? () => handleFolderClick(item.fullPath || '', item.name) : undefined}
+              onFolderClick={item.type === 'folder' ? () => handleFolderClick(item.fullPath || '') : undefined}
               onRefresh={() => fetchData(currentPath)}
             />
           ))}
