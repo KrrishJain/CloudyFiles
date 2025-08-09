@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
         const key = request.nextUrl.searchParams.get('key');
         
         if (!key) {
+
             return NextResponse.json({ error: 'File key is required' }, { status: 400 });
         }
 

@@ -338,12 +338,30 @@ class FileService {
    * Delete file from S3
    */
   async deleteFile(key: string): Promise<void> {
-    const response = await fetch(`/api/delete-file?key=${encodeURIComponent(key)}`, {
-      method: 'DELETE'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to delete ${key}`);
+    try {
+      const response = await fetch(`/api/delete-file?key=${encodeURIComponent(key)}`, {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) {
+        const contentType = response.headers.get('content-type');
+        let errorMessage = `Failed to delete ${key}`;
+        
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } else {
+          // If not JSON, get the text response (might be HTML error page)
+          const errorText = await response.text();
+          console.error('Non-JSON error response:', errorText);
+          errorMessage = `Server error (${response.status})`;
+        }
+        
+        throw new Error(errorMessage);
+      }
+    } catch (error) {
+      console.error('Error in deleteFile:', error);
+      throw error;
     }
   }
 
@@ -351,20 +369,37 @@ class FileService {
    * Create a new folder in S3
    */
   async createFolder(folderName: string, parentPath: string = ''): Promise<void> {
-    const response = await fetch('/api/folder', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        folderName,
-        parentPath
-      })
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to create folder');
+    try {
+      const response = await fetch('/api/folder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          folderName,
+          parentPath
+        })
+      });
+      
+      if (!response.ok) {
+        const contentType = response.headers.get('content-type');
+        let errorMessage = 'Failed to create folder';
+        
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } else {
+          // If not JSON, get the text response (might be HTML error page)
+          const errorText = await response.text();
+          console.error('Non-JSON error response:', errorText);
+          errorMessage = `Server error (${response.status})`;
+        }
+        
+        throw new Error(errorMessage);
+      }
+    } catch (error) {
+      console.error('Error in createFolder:', error);
+      throw error;
     }
   }
 
